@@ -3,149 +3,118 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Calculadora Estilo iPhone</title>
+    <title>Jogo do Mario</title>
     <style>
         body {
-            font-family: 'Helvetica Neue', Arial, sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
             margin: 0;
-            background-color: #000;
+            font-family: Arial, sans-serif;
+            overflow: hidden;
+            background: #87CEEB;
         }
 
-        .calculator {
-            width: 320px;
-            background: #222;
-            border-radius: 30px;
-            padding: 20px;
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5);
-        }
-
-        .calculator-screen {
+        .game-container {
+            position: relative;
             width: 100%;
-            height: 80px;
-            background: #333;
-            border: none;
-            border-radius: 15px;
-            margin-bottom: 20px;
-            text-align: right;
-            padding: 10px;
-            color: #fff;
-            font-size: 2.5rem;
-            box-shadow: inset 0 -4px 6px rgba(0, 0, 0, 0.5);
+            height: 100vh;
+            overflow: hidden;
+            background: linear-gradient(#87CEEB, #7EC850);
         }
 
-        .button-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 10px;
+        .mario {
+            position: absolute;
+            bottom: 100px;
+            left: 50px;
+            width: 50px;
+            height: 50px;
+            background: url('https://i.imgur.com/4bXc9dx.png') no-repeat center/cover;
         }
 
-        .button {
-            height: 60px;
-            border: none;
-            border-radius: 15px;
-            font-size: 1.5rem;
-            color: #fff;
-            cursor: pointer;
-            box-shadow: 0 4px rgba(0, 0, 0, 0.3);
+        .pipe {
+            position: absolute;
+            bottom: 80px;
+            right: 0;
+            width: 50px;
+            height: 70px;
+            background: green;
+            animation: movePipe 2s linear infinite;
         }
 
-        .button:active {
-            box-shadow: 0 2px rgba(0, 0, 0, 0.5);
-            transform: translateY(2px);
+        @keyframes movePipe {
+            from {
+                right: -50px;
+            }
+            to {
+                right: 100%;
+            }
         }
 
-        .button.operator {
-            background: #f39c12;
+        .game-over {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-size: 3rem;
+            text-shadow: 2px 2px black;
+            display: none;
         }
 
-        .button.operator:active {
-            background: #e67e22;
-        }
-
-        .button.number {
-            background: #333;
-        }
-
-        .button.number:active {
-            background: #444;
-        }
-
-        .button.clear {
-            background: #d35400;
-        }
-
-        .button.clear:active {
-            background: #e74c3c;
-        }
-
-        .button.zero {
-            grid-column: span 2;
+        .ground {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            height: 50px;
+            background: #7EC850;
         }
     </style>
 </head>
 <body>
-    <div class="calculator">
-        <input type="text" class="calculator-screen" id="screen" disabled />
-        <div class="button-grid">
-            <button class="button clear" onclick="clearScreen()">C</button>
-            <button class="button operator" onclick="appendOperator('%')">%</button>
-            <button class="button operator" onclick="backspace()">←</button>
-            <button class="button operator" onclick="appendOperator('/')">÷</button>
-
-            <button class="button number" onclick="appendNumber(7)">7</button>
-            <button class="button number" onclick="appendNumber(8)">8</button>
-            <button class="button number" onclick="appendNumber(9)">9</button>
-            <button class="button operator" onclick="appendOperator('*')">×</button>
-
-            <button class="button number" onclick="appendNumber(4)">4</button>
-            <button class="button number" onclick="appendNumber(5)">5</button>
-            <button class="button number" onclick="appendNumber(6)">6</button>
-            <button class="button operator" onclick="appendOperator('-')">−</button>
-
-            <button class="button number" onclick="appendNumber(1)">1</button>
-            <button class="button number" onclick="appendNumber(2)">2</button>
-            <button class="button number" onclick="appendNumber(3)">3</button>
-            <button class="button operator" onclick="appendOperator('+')">+</button>
-
-            <button class="button number zero" onclick="appendNumber(0)">0</button>
-            <button class="button number" onclick="appendNumber('.')">.</button>
-            <button class="button operator" onclick="calculate()">=</button>
-        </div>
+    <div class="game-container">
+        <div class="mario" id="mario"></div>
+        <div class="pipe" id="pipe"></div>
+        <div class="ground"></div>
+        <div class="game-over" id="gameOver">Game Over!</div>
     </div>
 
     <script>
-        const screen = document.getElementById('screen');
+        const mario = document.getElementById('mario');
+        const pipe = document.getElementById('pipe');
+        const gameOver = document.getElementById('gameOver');
 
-        function appendNumber(number) {
-            screen.value += number;
+        let isJumping = false;
+
+        function jump() {
+            if (isJumping) return;
+
+            isJumping = true;
+            mario.style.animation = 'jump 0.5s linear';
+
+            setTimeout(() => {
+                mario.style.animation = '';
+                isJumping = false;
+            }, 500);
         }
 
-        function appendOperator(operator) {
-            const lastChar = screen.value[screen.value.length - 1];
-            if (!isNaN(lastChar) || lastChar === '.') {
-                screen.value += operator;
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'ArrowUp' || event.key === ' ') {
+                jump();
             }
-        }
+        });
 
-        function clearScreen() {
-            screen.value = '';
-        }
+        const checkCollision = setInterval(() => {
+            const marioBottom = parseInt(window.getComputedStyle(mario).bottom.replace('px', ''));
+            const pipeLeft = parseInt(window.getComputedStyle(pipe).left.replace('px', ''));
 
-        function backspace() {
-            screen.value = screen.value.slice(0, -1);
-        }
+            if (pipeLeft > 0 && pipeLeft < 50 && marioBottom < 50) {
+                pipe.style.animation = 'none';
+                pipe.style.left = `${pipeLeft}px`;
+                mario.style.bottom = '0';
+                mario.style.background = 'url(https://i.imgur.com/3wDi3R7.png) no-repeat center/cover';
+                gameOver.style.display = 'block';
 
-        function calculate() {
-            try {
-                screen.value = eval(screen.value.replace('÷', '/').replace('×', '*'));
-            } catch (error) {
-                screen.value = 'Erro';
+                clearInterval(checkCollision);
             }
-        }
+        }, 10);
     </script>
 </body>
 </html>
