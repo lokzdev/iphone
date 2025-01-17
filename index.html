@@ -1,120 +1,155 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jogo do Mario</title>
+    <title>Tradutor Simples</title>
     <style>
         body {
-            margin: 0;
             font-family: Arial, sans-serif;
-            overflow: hidden;
-            background: #87CEEB;
-        }
-
-        .game-container {
-            position: relative;
-            width: 100%;
+            background-color: #f1f1f1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
             height: 100vh;
-            overflow: hidden;
-            background: linear-gradient(#87CEEB, #7EC850);
+            margin: 0;
         }
 
-        .mario {
-            position: absolute;
-            bottom: 100px;
-            left: 50px;
-            width: 50px;
-            height: 50px;
-            background: url('https://i.imgur.com/4bXc9dx.png') no-repeat center/cover;
+        .translator-container {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 350px;
         }
 
-        .pipe {
-            position: absolute;
-            bottom: 80px;
-            right: 0;
-            width: 50px;
-            height: 70px;
-            background: green;
-            animation: movePipe 2s linear infinite;
+        h1 {
+            text-align: center;
+            font-size: 1.8rem;
+            color: #333;
         }
 
-        @keyframes movePipe {
-            from {
-                right: -50px;
-            }
-            to {
-                right: 100%;
-            }
-        }
-
-        .game-over {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            color: white;
-            font-size: 3rem;
-            text-shadow: 2px 2px black;
-            display: none;
-        }
-
-        .ground {
-            position: absolute;
-            bottom: 0;
+        textarea {
             width: 100%;
-            height: 50px;
-            background: #7EC850;
+            height: 100px;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            margin-bottom: 20px;
+            font-size: 1rem;
+        }
+
+        select {
+            width: 100%;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            font-size: 1rem;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: #4CAF50;
+            border: none;
+            border-radius: 5px;
+            font-size: 1.2rem;
+            color: white;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        #translatedText {
+            width: 100%;
+            height: 100px;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            font-size: 1rem;
+            background-color: #f5f5f5;
         }
     </style>
 </head>
 <body>
-    <div class="game-container">
-        <div class="mario" id="mario"></div>
-        <div class="pipe" id="pipe"></div>
-        <div class="ground"></div>
-        <div class="game-over" id="gameOver">Game Over!</div>
+    <div class="translator-container">
+        <h1>Tradutor Simples</h1>
+        <textarea id="inputText" placeholder="Digite o texto aqui..."></textarea>
+        <select id="languageSelect">
+            <option value="pt">Português</option>
+            <option value="en">Inglês</option>
+            <option value="es">Espanhol</option>
+            <option value="fr">Francês</option>
+            <option value="de">Alemão</option>
+        </select>
+        <button onclick="translateText()">Traduzir</button>
+        <textarea id="translatedText" disabled placeholder="A tradução aparecerá aqui..."></textarea>
     </div>
 
     <script>
-        const mario = document.getElementById('mario');
-        const pipe = document.getElementById('pipe');
-        const gameOver = document.getElementById('gameOver');
+        function translateText() {
+            const inputText = document.getElementById('inputText').value;
+            const targetLanguage = document.getElementById('languageSelect').value;
+            
+            let translatedText = '';
 
-        let isJumping = false;
+            if (targetLanguage === 'en') {
+                translatedText = translateToEnglish(inputText);
+            } else if (targetLanguage === 'es') {
+                translatedText = translateToSpanish(inputText);
+            } else if (targetLanguage === 'fr') {
+                translatedText = translateToFrench(inputText);
+            } else if (targetLanguage === 'de') {
+                translatedText = translateToGerman(inputText);
+            } else {
+                translatedText = inputText;  // Default is Portuguese
+            }
 
-        function jump() {
-            if (isJumping) return;
-
-            isJumping = true;
-            mario.style.animation = 'jump 0.5s linear';
-
-            setTimeout(() => {
-                mario.style.animation = '';
-                isJumping = false;
-            }, 500);
+            document.getElementById('translatedText').value = translatedText;
         }
 
-        document.addEventListener('keydown', (event) => {
-            if (event.key === 'ArrowUp' || event.key === ' ') {
-                jump();
-            }
-        });
+        function translateToEnglish(text) {
+            const translations = {
+                'olá': 'hello',
+                'mundo': 'world',
+                'como': 'how',
+                'você': 'are you',
+            };
+            return text.split(' ').map(word => translations[word.toLowerCase()] || word).join(' ');
+        }
 
-        const checkCollision = setInterval(() => {
-            const marioBottom = parseInt(window.getComputedStyle(mario).bottom.replace('px', ''));
-            const pipeLeft = parseInt(window.getComputedStyle(pipe).left.replace('px', ''));
+        function translateToSpanish(text) {
+            const translations = {
+                'olá': 'hola',
+                'mundo': 'mundo',
+                'como': 'cómo',
+                'você': 'estás',
+            };
+            return text.split(' ').map(word => translations[word.toLowerCase()] || word).join(' ');
+        }
 
-            if (pipeLeft > 0 && pipeLeft < 50 && marioBottom < 50) {
-                pipe.style.animation = 'none';
-                pipe.style.left = `${pipeLeft}px`;
-                mario.style.bottom = '0';
-                mario.style.background = 'url(https://i.imgur.com/3wDi3R7.png) no-repeat center/cover';
-                gameOver.style.display = 'block';
+        function translateToFrench(text) {
+            const translations = {
+                'olá': 'bonjour',
+                'mundo': 'monde',
+                'como': 'comment',
+                'você': 'ça va',
+            };
+            return text.split(' ').map(word => translations[word.toLowerCase()] || word).join(' ');
+        }
 
-                clearInterval(checkCollision);
-            }
-        }, 10);
+        function translateToGerman(text) {
+            const translations = {
+                'olá': 'hallo',
+                'mundo': 'welt',
+                'como': 'wie',
+                'você': 'gehts',
+            };
+            return text.split(' ').map(word => translations[word.toLowerCase()] || word).join(' ');
+        }
     </script>
 </body>
 </html>
