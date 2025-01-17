@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora Estilo iPhone</title>
+    <style>
+        body {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #000;
+        }
+
+        .calculator {
+            width: 320px;
+            background: #222;
+            border-radius: 30px;
+            padding: 20px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5);
+        }
+
+        .calculator-screen {
+            width: 100%;
+            height: 80px;
+            background: #333;
+            border: none;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            text-align: right;
+            padding: 10px;
+            color: #fff;
+            font-size: 2.5rem;
+            box-shadow: inset 0 -4px 6px rgba(0, 0, 0, 0.5);
+        }
+
+        .button-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+        }
+
+        .button {
+            height: 60px;
+            border: none;
+            border-radius: 15px;
+            font-size: 1.5rem;
+            color: #fff;
+            cursor: pointer;
+            box-shadow: 0 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .button:active {
+            box-shadow: 0 2px rgba(0, 0, 0, 0.5);
+            transform: translateY(2px);
+        }
+
+        .button.operator {
+            background: #f39c12;
+        }
+
+        .button.operator:active {
+            background: #e67e22;
+        }
+
+        .button.number {
+            background: #333;
+        }
+
+        .button.number:active {
+            background: #444;
+        }
+
+        .button.clear {
+            background: #d35400;
+        }
+
+        .button.clear:active {
+            background: #e74c3c;
+        }
+
+        .button.zero {
+            grid-column: span 2;
+        }
+    </style>
+</head>
+<body>
+    <div class="calculator">
+        <input type="text" class="calculator-screen" id="screen" disabled />
+        <div class="button-grid">
+            <button class="button clear" onclick="clearScreen()">C</button>
+            <button class="button operator" onclick="appendOperator('%')">%</button>
+            <button class="button operator" onclick="backspace()">←</button>
+            <button class="button operator" onclick="appendOperator('/')">÷</button>
+
+            <button class="button number" onclick="appendNumber(7)">7</button>
+            <button class="button number" onclick="appendNumber(8)">8</button>
+            <button class="button number" onclick="appendNumber(9)">9</button>
+            <button class="button operator" onclick="appendOperator('*')">×</button>
+
+            <button class="button number" onclick="appendNumber(4)">4</button>
+            <button class="button number" onclick="appendNumber(5)">5</button>
+            <button class="button number" onclick="appendNumber(6)">6</button>
+            <button class="button operator" onclick="appendOperator('-')">−</button>
+
+            <button class="button number" onclick="appendNumber(1)">1</button>
+            <button class="button number" onclick="appendNumber(2)">2</button>
+            <button class="button number" onclick="appendNumber(3)">3</button>
+            <button class="button operator" onclick="appendOperator('+')">+</button>
+
+            <button class="button number zero" onclick="appendNumber(0)">0</button>
+            <button class="button number" onclick="appendNumber('.')">.</button>
+            <button class="button operator" onclick="calculate()">=</button>
+        </div>
+    </div>
+
+    <script>
+        const screen = document.getElementById('screen');
+
+        function appendNumber(number) {
+            screen.value += number;
+        }
+
+        function appendOperator(operator) {
+            const lastChar = screen.value[screen.value.length - 1];
+            if (!isNaN(lastChar) || lastChar === '.') {
+                screen.value += operator;
+            }
+        }
+
+        function clearScreen() {
+            screen.value = '';
+        }
+
+        function backspace() {
+            screen.value = screen.value.slice(0, -1);
+        }
+
+        function calculate() {
+            try {
+                screen.value = eval(screen.value.replace('÷', '/').replace('×', '*'));
+            } catch (error) {
+                screen.value = 'Erro';
+            }
+        }
+    </script>
+</body>
+</html>
